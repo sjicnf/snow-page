@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>冬日雪景</title>
+<style>
+*{margin:0;padding:0}
+body{
+  background:#000;
+  overflow:hidden;
+  height:100vh;
+}
+canvas{
+  display:block;
+}
+.text-box{
+  position:fixed;
+  left:50%;top:65%;
+  transform:translate(-50%,-50%);
+  text-align:center;
+  color:#87ceeb;
+  font-family:system-ui,sans-serif;
+  z-index:10;
+}
+.title{
+  font-size:32px;
+  margin-bottom:8px;
+  text-shadow:0 0 12px #87ceeb;
+}
+.sub{
+  font-size:16px;
+  opacity:0.8;
+}
+.tip{
+  margin-top:40px;
+  font-size:13px;
+  opacity:0.5;
+}
+</style>
+</head>
+<body>
+<div class="text-box">
+  <div class="title">❄ 冬日雪景 ❄</div>
+  <div class="sub">愿你的冬天，温暖且明亮</div>
+  <div class="tip">轻触屏幕，让雪花散开再重聚</div>
+</div>
+<canvas id="snow"></canvas>
+<script>
+const canvas=document.getElementById('snow');
+const ctx=canvas.getContext('2d');
+let w,h;
+let snowList=[];
+let click=false;
+function resize(){
+  w=canvas.width=innerWidth;
+  h=canvas.height=innerHeight;
+}
+resize();
+window.addEventListener('resize',resize);
+class Snow{
+  constructor(){
+    this.reset();
+  }
+  reset(){
+    this.x=Math.random()*w;
+    this.y=Math.random()*-h;
+    this.r=Math.random()*2+1;
+    this.speedY=Math.random()*2+1;
+    this.speedX=(Math.random()-0.5)*0.8;
+    this.alpha=Math.random()*0.5+0.5;
+  }
+  update(){
+    if(click){
+      this.x += (this.x - w/2)*0.04;
+      this.y += (this.y - h/2)*0.04;
+    }else{
+      this.y += this.speedY;
+      this.x += this.speedX;
+    }
+    if(this.y>h||this.x<0||this.x>w) this.reset();
+  }
+  draw(){
+    ctx.beginPath();
+    ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
+    ctx.fillStyle=`rgba(200,230,255,${this.alpha})`;
+    ctx.fill();
+  }
+}
+for(let i=0;i<600;i++) snowList.push(new Snow());
+function draw(){
+  ctx.fillStyle='rgba(0,0,0,0.08)';
+  ctx.fillRect(0,0,w,h);
+  snowList.forEach(s=>{
+    s.update();
+    s.draw();
+  })
+  requestAnimationFrame(draw);
+}
+draw();
+canvas.addEventListener('mousedown',()=>click=true);
+canvas.addEventListener('mouseup',()=>click=false);
+canvas.addEventListener('touchstart',()=>click=true);
+canvas.addEventListener('touchend',()=>click=false);
+</script>
+</body>
+</html>
